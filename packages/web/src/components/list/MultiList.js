@@ -151,6 +151,21 @@ class MultiList extends Component {
 			this.updateQuery(valueArray, this.props);
 		});
 
+		// checkPropChange(this.props.options, prevProps.options, () => {
+		// });
+
+		checkSomePropChange(this.props, prevProps,
+			[
+				'size',
+				'sortBy',
+				'dataField',
+				'options',
+			],
+			() => {
+				if (this.props.onData) this.props.onData(this.getData());
+			},
+		);
+
 		let selectedValue = valueArray;
 		const { selectAllLabel } = this.props;
 
@@ -397,7 +412,7 @@ class MultiList extends Component {
 					options: [],
 				});
 			} else {
-				this.state = { 
+				this.state = {
 					...this.state || {},
 					options: [],
 				};
@@ -487,6 +502,16 @@ class MultiList extends Component {
 			return false;
 		});
 		return listItems;
+	}
+
+	getData() {
+		const { options, dataField, rawData } = this.props;
+		return {
+			data: options && options[dataField]
+				? this.getOptions(options[dataField].buckets, this.props)
+				: [],
+			rawData,
+		};
 	}
 
 	getComponent() {
@@ -696,6 +721,7 @@ MultiList.propTypes = {
 	missingLabel: types.string,
 	showLoadMore: types.bool,
 	loadMoreLabel: types.title,
+	onData: types.func,
 };
 
 MultiList.defaultProps = {
